@@ -9,8 +9,6 @@ namespace BibliotecaEscolar.Models
         public string Autor { get; set; }
         public string ISBN { get; set; }
         public int PrestamosHistoricos { get; set; }
-        
-        // Creamos la lista directamente
         public List<Ejemplar> Ejemplares { get; set; } = new List<Ejemplar>();
     }
 }
