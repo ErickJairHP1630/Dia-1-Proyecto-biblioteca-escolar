@@ -5,6 +5,8 @@ Contexto: Una biblioteca escolar presta libros, pero no todos los títulos tiene
 
 Objetivo: "Día 1: repositorio y documento de diseño" dejar listo el diseño y el repositorio antes de escribir código  Estructura del Repositorio
 ```text
+ESTRUCTURA DE LOS ARCHIVOS
+
 proyecto-biblioteca-escolar/
 docs/        -"Documentación de diseño y anexos del proyecto"
 docs/DisenoPreliminar.md -"Documento de diseño preliminar"(Día 1)
