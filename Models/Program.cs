@@ -48,6 +48,17 @@ namespace BibliotecaEscolar
                 foreach (var e in t.Ejemplares)
                     Console.WriteLine($"  - Ejemplar {e.CodigoBarras}: {e.Estado}");
             }
+
+            Console.WriteLine("\n=== DIA 5: BUSQUEDAS ===");
+
+            // Búsqueda Secuencial por Nombre
+            BuscarPorNombre(catalogo, "El Principito");
+            BuscarPorNombre(catalogo, "Harry Potter"); // Caso no encontrado
+
+            // Búsqueda Binaria por ISBN (requiere ordenar por ISBN primero)
+            OrdenarPorISBN(catalogo);
+            BuscarPorISBN(catalogo, "978-0156013987");
+            BuscarPorISBN(catalogo, "000-0000000000"); // Caso no encontrado
         }
 
         public static void OrdenarPorInsercion(List<Titulo> lista)
@@ -69,22 +80,63 @@ namespace BibliotecaEscolar
 
         private static bool DebeIntercambiar(Titulo actual, Titulo clave)
         {
-            // Criterio 1: Mayor número de préstamos históricos va primero
-            if (clave.PrestamosHistoricos > actual.PrestamosHistoricos)
-            {
-                return true;
-            }
+            if (clave.PrestamosHistoricos > actual.PrestamosHistoricos) return true;
 
-            // Criterio 2: Estabilidad -> Si empatan en préstamos, va primero el menor alfabéticamente (A-Z)
             if (clave.PrestamosHistoricos == actual.PrestamosHistoricos)
             {
-                if (string.Compare(clave.Nombre, actual.Nombre, StringComparison.OrdinalIgnoreCase) < 0)
-                {
-                    return true;
-                }
+                if (string.Compare(clave.Nombre, actual.Nombre, StringComparison.OrdinalIgnoreCase) < 0) return true;
             }
 
             return false;
+        }
+        // Búsqueda secuencial recorriendo la lista uno por uno
+        public static void BuscarPorNombre(List<Titulo> lista, string nombre)
+        {
+            foreach (var t in lista)
+            {
+                if (t.Nombre.Equals(nombre, StringComparison.OrdinalIgnoreCase))
+                {
+                    int disp = t.Ejemplares.FindAll(e => e.Estado == "Disponible").Count;
+                    Console.WriteLine($"[ENCONTRADO] {t.Nombre} | ISBN: {t.ISBN} | Disponibles: {disp}");
+                    return;
+                }
+            }
+            Console.WriteLine($"[NO ENCONTRADO] El título '{nombre}' no existe.");
+        }
+        // Búsqueda binaria dividiendo a la mitad por ISBN
+        public static void BuscarPorISBN(List<Titulo> lista, string isbn)
+        {
+            int i = 0, f = lista.Count - 1;
+            while (i <= f)
+            {
+                int m = (i + f) / 2;
+                int cmp = string.Compare(lista[m].ISBN, isbn);
+
+                if (cmp == 0)
+                {
+                    int disp = lista[m].Ejemplares.FindAll(e => e.Estado == "Disponible").Count;
+                    Console.WriteLine($"[ENCONTRADO ISBN] {lista[m].Nombre} | Disponibles: {disp}");
+                    return;
+                }
+                if (cmp < 0) i = m + 1;
+                else f = m - 1;
+            }
+            Console.WriteLine($"[NO ENCONTRADO ISBN] El ISBN '{isbn}' no existe.");
+        }
+        // Ordenamiento rápido por ISBN para permitir búsqueda binaria
+        private static void OrdenarPorISBN(List<Titulo> lista)
+        {
+            for (int i = 1; i < lista.Count; i++)
+            {
+                Titulo clave = lista[i];
+                int j = i - 1;
+                while (j >= 0 && string.Compare(lista[j].ISBN, clave.ISBN) > 0)
+                {
+                    lista[j + 1] = lista[j];
+                    j--;
+                }
+                lista[j + 1] = clave;
+            }
         }
     }
 }
